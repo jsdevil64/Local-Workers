@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Namma Local Workers & Labor Finder</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Local Workers - Royal Home Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="a.css">
 </head>
@@ -13,121 +13,112 @@
     <header>
         <div class="logo-container">
             <i class="fa-solid fa-helmet-safety worker-logo-icon"></i>
-            <h1>LocalWorkers<span class="dot">.</span></h1>
+            <h1>Local Workers<span class="dot">.</span></h1>
         </div>
-        <button id="owner-login-btn" class="owner-btn">
-            <i class="fa-solid fa-user-gear"></i> Owner Login
+        <button id="tips-btn" class="tips-header-btn">
+            <i class="fa-solid fa-piggy-bank"></i> tips
         </button>
     </header>
 
     <main>
-        <div id="admin-status-bar" class="admin-bar" style="display: none;">
-            <span><i class="fa-solid fa-shield-halved"></i> Owner Mode Active</span>
-            <button id="owner-logout-btn">Logout</button>
-        </div>
-
+        <!-- Royal Hero Section -->
         <section class="hero-section">
-            <h2>உடனடி வீட்டுச் சேவைகள் மற்றும் தொழிலாளர்கள்<br><span>ஒரே கிளிக்கில்!</span></h2>
-            <p>உங்களுக்கு அருகிலுள்ள சிறந்த பெயிண்டர்கள், கிளீனர்கள், லோடு மேன் மற்றும் தோட்டத் தொழிலாளர்கள்.</p>
+            <h2>உங்கள் இல்லத்திற்கான இராஜபோக சேவைகள்<br><span>Elite Home Care!</span></h2>
+            <p>சிறந்த பெயிண்டர்கள், கிளீனர்கள், லோடு மேன் மற்றும் தோட்டத் தொழிலாளர்கள் ஒரே இடத்தில்.</p>
             
             <div class="search-box-container">
                 <div class="input-wrapper">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" id="area-search" placeholder="பகுதி அல்லது பின்கோடு அடிக்கவும்...">
+                    <input type="text" id="area-search" placeholder="உங்கள் ஏரியா அல்லது பின்கோடு அடிக்கவும்...">
                 </div>
                 <div class="select-wrapper">
-                    <i class="fa-solid fa-screwdriver-wrench brief-icon"></i>
+                    <i class="fa-solid fa-wand-magic-sparkles brief-icon"></i>
                     <select id="service-filter">
-                        <option value="all">அனைத்து தொழிலாளர்கள்</option>
-                        <option value="paint">பெயிண்டர்கள் (Painters)</option>
-                        <option value="clean">வீடு கிளீனிங் (Home Cleaners)</option>
-                        <option value="load">லோடு மேன் (Load Men)</option>
-                        <option value="tree">மரம் வெட்டுபவர்கள் (Tree Cutters)</option>
-                        <option value="septic">செப்டிக் டேங்க் கிளீனர்ஸ்</option>
-                        <option value="garden">தோட்டப் பராமரிப்பு</option>
+                        <option value="all">அனைத்து ராயல் சேவைகளும்</option>
+                        <option value="painter">பெயிண்டர் (Painter)</option>
+                        <option value="cleaner">கிளீனர் (Deep Cleaner)</option>
+                        <option value="loadman">லோடு மேன் (Load Man)</option>
+                        <option value="gardener">தோட்டத் தொழிலாளர் (Gardener)</option>
                     </select>
                 </div>
                 <button id="search-btn">தேடுங்கள்</button>
             </div>
         </section>
 
+        <!-- Premium Registration Trigger -->
         <section class="register-trigger-section">
             <button id="open-form-btn" class="main-register-btn">
-                <i class="fa-solid fa-square-plus"></i> தொழிலாளர்கள் தங்களை இலவசமாகப் பதிவு செய்ய (Register Here)
+                <i class="fa-solid fa-shield-halved"></i> நீங்கள் ஒரு சிறந்த தொழிலாளியா? இங்கு இணையுங்கள் (Register)
             </button>
         </section>
 
+        <!-- Royal Chips Category -->
         <section class="quick-categories">
-            <h3>தேவைகள் (Categories)</h3>
+            <h3>பிரத்தியேக சேவைகள்</h3>
             <div class="category-chips">
                 <button class="chip active" data-filter="all">All</button>
-                <button class="chip" data-filter="paint"><i class="fa-solid fa-paint-roller"></i> பெயிண்டர்</button>
-                <button class="chip" data-filter="clean"><i class="fa-solid fa-broom"></i> கிளீனிங்</button>
-                <button class="chip" data-filter="load"><i class="fa-solid fa-truck-ramp-box"></i> லோடு மேன்</button>
-                <button class="chip" data-filter="tree"><i class="fa-solid fa-tree"></i> மரம் வெட்ட</button>
-                <button class="chip" data-filter="septic"><i class="fa-solid fa-faucet-drip"></i> செப்டிக் டேங்க்</button>
-                <button class="chip" data-filter="garden"><i class="fa-solid fa-seedling"></i> தோட்டம்</button>
+                <button class="chip" data-filter="painter"><i class="fa-solid fa-paint-roller"></i> Painters</button>
+                <button class="chip" data-filter="cleaner"><i class="fa-solid fa-broom"></i> Cleaners</button>
+                <button class="chip" data-filter="loadman"><i class="fa-solid fa-truck-ramp-box"></i> Load Men</button>
+                <button class="chip" data-filter="gardener"><i class="fa-solid fa-seedling"></i> Gardeners</button>
             </div>
         </section>
 
+        <!-- Service Listings -->
         <section class="experts-section">
             <div class="section-title-area">
-                <h3>அருகில் உள்ள தொழிலாளர்கள்</h3>
-                <span id="results-count">0 பதிவுகள் உள்ளன</span>
+                <h3>சான்றளிக்கப்பட்ட வல்லுநர்கள்</h3>
+                <span id="results-count">0 நபர்கள் உள்ளனர்</span>
             </div>
             <div class="experts-grid" id="experts-grid">
-                </div>
+                <!-- Data will load here dynamically -->
+            </div>
         </section>
     </main>
 
+    <!-- Royal Registration Modal -->
     <div id="register-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-address-card"></i> புதிய தொழிலாளர் பதிவு</h3>
+                <h3><i class="fa-solid fa-id-card-gold"></i> புதிய உறுப்பினர் சேர்க்கை</h3>
                 <span class="close-btn" id="close-reg-btn">&times;</span>
             </div>
             <form id="expert-form">
                 <div class="form-group">
-                    <label><i class="fa-solid fa-user"></i> தொழிலாளர் / மேஸ்திரி பெயர்</label>
-                    <input type="text" id="name" placeholder="உதாரணம்: பெயிண்டர் குமார் / சிவா லோடு மேன் டீம்" required>
+                    <label><i class="fa-solid fa-user-tie"></i> உங்கள் பெயர்</label>
+                    <input type="text" id="name" placeholder="உதாரணம்: செல்வம் / அந்தோணி" required>
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fa-solid fa-phone"></i> மொபைல் எண்</label>
+                    <label><i class="fa-solid fa-phone"></i> மொபைல் எண் (WhatsApp எண்)</label>
                     <input type="tel" id="phone" placeholder="98765xxxxx" required>
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fa-solid fa-list"></i> வேலை வகை (Work Category)</label>
+                    <label><i class="fa-solid fa-layer-group"></i> சேவை வகை (Category)</label>
                     <select id="prof" required>
-                        <option value="paint">செவர் பெயிண்ட் அடிப்பவர் (Painter)</option>
-                        <option value="clean">வீடு கிளீன் செய்பவர் (Home Cleaning)</option>
-                        <option value="load">மூட்டை தூக்குபவர் (Load Man)</option>
-                        <option value="tree">மரம் வெட்டுபவர் (Tree Cutter)</option>
-                        <option value="septic">செப்டிக் டேங்க் கிளீன் செய்பவர்</option>
-                        <option value="garden">தோட்டம் பராமரிப்பவர் (Gardening)</option>
+                        <option value="painter">பெயிண்டர் (Painter)</option>
+                        <option value="cleaner">கிளீனர் (Deep Cleaner)</option>
+                        <option value="loadman">லோடு மேன் (Load Man)</option>
+                        <option value="gardener">தோட்டத் தொழிலாளர் (Gardener)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fa-solid fa-map-pin"></i> ஏரியா / லொகேஷன்</label>
-                    <input type="text" id="location" placeholder="உதாரணம்: கோவை, கணபதி" required>
+                    <label><i class="fa-solid fa-map-location-dot"></i> நீங்கள் சேவை வழங்கும் ஏரியா / லொகேஷன்</label>
+                    <input type="text" id="location" placeholder="உதாரணம்: சென்னை, அடையாறு" required>
                 </div>
 
-                <div class="form-group">
-                    <label><i class="fa-solid fa-camera"></i> புகைப்படம் (Photo)</label>
-                    <input type="file" id="profile-pic" accept="image/*" class="file-input">
-                </div>
-
-                <button type="submit" class="submit-btn">விபரங்களைச் சேமிக்க</button>
+                <button type="submit" class="submit-btn">விபரங்களைச் சமர்ப்பிக்க</button>
             </form>
         </div>
     </div>
 
+    <!-- Review & Details Modal -->
     <div id="review-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-star"></i> விபரங்கள் & ரிவியூஸ்</h3>
+                <h3><i class="fa-solid fa-award"></i> விபரங்கள் & மதிப்பீடுகள்</h3>
                 <span class="close-btn" id="close-rev-btn">&times;</span>
             </div>
             
@@ -143,7 +134,7 @@
             <hr class="divider">
 
             <div class="add-review-section">
-                <h5>உங்கள் கருத்துக்களைக் கூறவும்:</h5>
+                <h5>உங்கள் மேலான கருத்துக்களைக் கூறவும்:</h5>
                 <form id="review-form">
                     <div class="rating-input-wrapper">
                         <label>ரேட்டிங்:</label>
@@ -156,7 +147,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <textarea id="review-text" rows="2" placeholder="இவர்களது வேலையைப் பற்றிய உங்கள் கருத்து..." required></textarea>
+                        <textarea id="review-text" rows="2" placeholder="சேவை எவ்வாறு இருந்தது என்பதை எழுதவும்..." required></textarea>
                     </div>
                     <button type="submit" class="submit-btn-sm">ரிவியூ சமர்ப்பிக்க</button>
                 </form>
@@ -165,8 +156,29 @@
             <hr class="divider">
 
             <h5>வாடிக்கையாளர் கருத்துக்கள் (<span id="modal-review-count">0</span>):</h5>
-            <div class="reviews-display-list" id="modal-reviews-list">
+            <div class="reviews-display-list" id="modal-reviews-list"></div>
+        </div>
+    </div>
+
+    <!-- Royal Gift Modal (Tips) -->
+    <div id="tips-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-gem" style="color: #D4AF37;"></i> Local Workers - ஆதரவு அளிக்கவும்</h3>
+                <span class="close-btn" id="close-tips-btn">&times;</span>
+            </div>
+            <div style="text-align: center; margin-bottom: 15px;">
+                <p style="font-size: 14px; color: #A4B3C6;">எங்கள் பிரீமியம் சேவை உங்களுக்குப் பிடித்திருந்தால், சிறு தொகையை வழங்கி எங்களை ஊக்குவிக்கலாம்!</p>
+            </div>
+            <form id="tips-form">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-indian-rupee-sign"></i> தொகையை உள்ளிடவும் (Amount)</label>
+                    <input type="number" id="tips-amount" placeholder="100" min="1" required>
                 </div>
+                <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%); color: #0F172A;">
+                    <i class="fa-solid fa-crown"></i> Pay via UPI
+                </button>
+            </form>
         </div>
     </div>
 
