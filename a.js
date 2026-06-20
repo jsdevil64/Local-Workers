@@ -1,3 +1,5 @@
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLNn4wuMKwlWuXGHFMuQsHD1aOWjEOkBb26n-CVKjB4X7qELkTCPGrAz5uwylSjj9b/exec  ';
+
 const expertGrid = document.getElementById('experts-grid');
 const openFormBtn = document.getElementById('open-form-btn');
 const registerModal = document.getElementById('register-modal');
@@ -11,10 +13,6 @@ const reviewForm = document.getElementById('review-form');
 const modalReviewsList = document.getElementById('modal-reviews-list');
 const modalReviewCount = document.getElementById('modal-review-count');
 
-const ownerLoginBtn = document.getElementById('owner-login-btn');
-const ownerLogoutBtn = document.getElementById('owner-logout-btn');
-const adminStatusBar = document.getElementById('admin-status-bar');
-
 const searchBtn = document.getElementById('search-btn');
 const areaSearch = document.getElementById('area-search');
 const serviceFilter = document.getElementById('service-filter');
@@ -22,26 +20,39 @@ const chips = document.querySelectorAll('.chip');
 
 let experts = [];
 let activeExpertId = null; 
-let isOwnerLoggedIn = false; 
+
+async function loadExpertsFromSheet() {
+    expertGrid.innerHTML = '<div style="text-align:center; padding:40px; grid-column: 1/-1; color:#D4AF37;"><p>Elite விபரங்கள் லோடு ஆகிறது...</p></div>';
+    try {
+        const response = await fetch(SCRIPT_URL, { method: "GET", redirect: "follow" });
+        experts = await response.json();
+        
+        if (experts.error) {
+            console.error("Apps Script Error:", experts.error);
+            expertGrid.innerHTML = '<div style="text-align:center; padding:40px; grid-column: 1/-1; color:red;"><p>Apps Script Error!</p></div>';
+        } else {
+            handleSearch();
+        }
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        expertGrid.innerHTML = '<div style="text-align:center; padding:40px; grid-column: 1/-1; color:red;"><p>டேட்டா லோடு செய்வதில் பிழை ஏற்பட்டுள்ளது!</p></div>';
+    }
+}
 
 function sortExpertsData(array) {
-    return array.sort((a, b) => {
-        if (a.isPremium && !b.isPremium) return -1;
-        if (!a.isPremium && b.isPremium) return 1;
-        return parseFloat(b.rating) - parseFloat(a.rating);
-    });
+    return array.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
 }
 
 function renderExperts(dataToRender = experts) {
     expertGrid.innerHTML = '';
     const sortedData = sortExpertsData([...dataToRender]);
-    resultsCount.textContent = `${sortedData.length} தொழிலாளர்கள் உள்ளனர்`;
+    resultsCount.textContent = `${sortedData.length} நபர்கள் உள்ளனர்`;
 
     if(sortedData.length === 0) {
         expertGrid.innerHTML = `
-            <div style="text-align:center; padding:40px; color:#64748B; grid-column: 1/-1;">
-                <i class="fa-solid fa-user-slash" style="font-size:40px; margin-bottom:10px; color:#cbd5e1;"></i>
-                <p>இந்த பகுதியில் யாரும் இன்னும் பதிவு செய்யவில்லை!</p>
+            <div style="text-align:center; padding:40px; color:#5C677D; grid-column: 1/-1;">
+                <i class="fa-solid fa-crown" style="font-size:36px; margin-bottom:10px; color:#cbd5e1;"></i>
+                <p>இந்த ஏரியாவில் வல்லுநர்கள் யாரும் இல்லை! முதல் ஆளாகப் பதியவும்.</p>
             </div>`;
         return;
     }
@@ -50,60 +61,32 @@ function renderExperts(dataToRender = experts) {
         const card = document.createElement('div');
         card.classList.add('expert-card');
         
-        if (expert.isPremium) card.classList.add('premium-active');
-        
-        const isBadRating = parseFloat(expert.rating) <= 3.0;
-        if (isOwnerLoggedIn && isBadRating && !expert.isPremium) {
-            card.classList.add('bad-review-alert');
-        }
-        
-        // WORK SPECIFIC ICONS ENGINE
-        let avatarHTML = '';
-        if (expert.image) {
-            avatarHTML = `<img src="${expert.image}" alt="${expert.name}" class="avatar-image">`;
-        } else {
-            let iconClass = 'fa-paint-roller'; // paint
-            if (expert.prof === 'clean') iconClass = 'fa-broom';
-            if (expert.prof === 'load') iconClass = 'fa-truck-ramp-box';
-            if (expert.prof === 'tree') iconClass = 'fa-tree';
-            if (expert.prof === 'septic') iconClass = 'fa-faucet-drip';
-            if (expert.prof === 'garden') iconClass = 'fa-seedling';
-            avatarHTML = `<div class="avatar-container"><i class="fa-solid ${iconClass}"></i></div>`;
-        }
-        
-        let tagHTML = '';
-        if (expert.isPremium) {
-            tagHTML = `<span class="premium-tag"><i class="fa-solid fa-crown"></i> Premium Partner</span>`;
-        } else if (isOwnerLoggedIn && isBadRating) {
-            tagHTML = `<span class="bad-review-tag"><i class="fa-solid fa-triangle-exclamation"></i> Bad Review</span>`;
-        }
-        
-        let ownerActionsHTML = '';
-        if (isOwnerLoggedIn) {
-            const premBtnText = expert.isPremium ? 'Remove Premium' : 'Make Premium';
-            const premClass = expert.isPremium ? 'premium-toggle-btn is-prem' : 'premium-toggle-btn';
-            ownerActionsHTML = `
-                <button class="${premClass}" onclick="togglePremiumStatus('${expert.id}')">${premBtnText}</button>
-                <button class="delete-btn" onclick="deleteExpertProfile('${expert.id}')"><i class="fa-solid fa-trash-can"></i></button>
-            `;
-        }
-        
+        // Elite Icon Management
+        let iconClass = 'fa-paint-roller'; 
+        if (expert.prof === 'cleaner') iconClass = 'fa-broom';
+        if (expert.prof === 'loadman') iconClass = 'fa-truck-ramp-box';
+        if (expert.prof === 'gardener') iconClass = 'fa-seedling';
+
+        const avatarHTML = `<div class="avatar-container"><i class="fa-solid ${iconClass}"></i></div>`;
+        const waMessage = encodeURIComponent(`வணக்கம் ${expert.name}, Local Workers தளம் மூலம் தங்களை தொடர்பு கொள்கிறேன். உங்களது பிரீமியம் சேவை தேவைப்படுகிறது.`);
+
         card.innerHTML = `
-            ${tagHTML}
             <div class="card-left" onclick="openReviewSystem('${expert.id}')">
                 ${avatarHTML}
                 <div class="expert-info">
                     <span class="badge">${getProfTamil(expert.prof)}</span>
                     <h4>${expert.name}</h4>
                     <p class="expert-loc"><i class="fa-solid fa-location-dot"></i> ${expert.location}</p>
-                    <div class="rating-badge"><i class="fa-solid fa-star"></i> <span>${expert.rating}</span></div>
+                    <div class="rating-badge"><i class="fa-solid fa-star"></i> <span>${expert.rating || '5.0'}</span></div>
                 </div>
             </div>
             <div class="card-right-actions">
-                <div class="action-buttons-row">
-                    <a href="tel:${expert.phone}" class="call-btn-link"><i class="fa-solid fa-phone"></i></a>
-                    ${ownerActionsHTML}
-                </div>
+                <a href="tel:${expert.phone}" class="call-btn-link" title="Call Member">
+                    <i class="fa-solid fa-phone"></i>
+                </a>
+                <a href="https://wa.me/91${expert.phone}?text=${waMessage}" target="_blank" class="wa-btn-link" title="WhatsApp Chat">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </a>
             </div>
         `;
         expertGrid.appendChild(card);
@@ -111,48 +94,11 @@ function renderExperts(dataToRender = experts) {
 }
 
 function getProfTamil(prof) {
-    if(prof === 'paint') return 'பெயிண்டர்';
-    if(prof === 'clean') return 'வீடு கிளீனிங்';
-    if(prof === 'load') return 'லோடு மேன்';
-    if(prof === 'tree') return 'மரம் வெட்ட';
-    if(prof === 'septic') return 'செப்டிக் டேங்க்';
-    if(prof === 'garden') return 'தோட்டப் பராமரிப்பு';
+    if(prof === 'painter') return 'பெயிண்டர்';
+    if(prof === 'cleaner') return 'சுத்தம் செய்தல்';
+    if(prof === 'loadman') return 'லோடு மேன்';
+    if(prof === 'gardener') return 'தோட்டத் தொழிலாளர்';
     return prof;
-}
-
-window.togglePremiumStatus = function(id) {
-    const expert = experts.find(e => e.id === id);
-    if (expert) {
-        expert.isPremium = !expert.isPremium;
-        handleSearch();
-    }
-}
-
-ownerLoginBtn.addEventListener('click', () => {
-    const password = prompt("பாஸ்வேர்ட் அடிக்கவும்:");
-    if (password === "js1602") {
-        isOwnerLoggedIn = true;
-        adminStatusBar.style.display = 'flex';
-        ownerLoginBtn.style.display = 'none';
-        handleSearch();
-        alert("Owner Mode Active!");
-    } else {
-        alert("தவறான பாஸ்வேர்ட்!");
-    }
-});
-
-ownerLogoutBtn.addEventListener('click', () => {
-    isOwnerLoggedIn = false;
-    adminStatusBar.style.display = 'none';
-    ownerLoginBtn.style.display = 'flex';
-    handleSearch();
-});
-
-window.deleteExpertProfile = function(id) {
-    if (confirm("நிச்சயமாக நீக்க வேண்டுமா?")) {
-        experts = experts.filter(e => e.id !== id);
-        handleSearch();
-    }
 }
 
 window.openReviewSystem = function(id) {
@@ -164,18 +110,12 @@ window.openReviewSystem = function(id) {
     document.getElementById('modal-expert-prof').textContent = getProfTamil(expert.prof);
     document.getElementById('modal-expert-loc').innerHTML = `<i class="fa-solid fa-location-dot"></i> ${expert.location}`;
     
-    const avatarDiv = document.getElementById('modal-expert-avatar');
-    if (expert.image) {
-        avatarDiv.innerHTML = `<img src="${expert.image}" class="avatar-image">`;
-    } else {
-        let iconClass = 'fa-paint-roller';
-        if (expert.prof === 'clean') iconClass = 'fa-broom';
-        if (expert.prof === 'load') iconClass = 'fa-truck-ramp-box';
-        if (expert.prof === 'tree') iconClass = 'fa-tree';
-        if (expert.prof === 'septic') iconClass = 'fa-faucet-drip';
-        if (expert.prof === 'garden') iconClass = 'fa-seedling';
-        avatarDiv.innerHTML = `<div class="avatar-container" style="margin-bottom:0;"><i class="fa-solid ${iconClass}"></i></div>`;
-    }
+    let iconClass = 'fa-paint-roller';
+    if (expert.prof === 'cleaner') iconClass = 'fa-broom';
+    if (expert.prof === 'loadman') iconClass = 'fa-truck-ramp-box';
+    if (expert.prof === 'gardener') iconClass = 'fa-seedling';
+    
+    document.getElementById('modal-expert-avatar').innerHTML = `<div class="avatar-container" style="margin-bottom:0;"><i class="fa-solid ${iconClass}"></i></div>`;
 
     renderReviewsList(expert);
     reviewModal.style.display = 'flex';
@@ -183,18 +123,22 @@ window.openReviewSystem = function(id) {
 
 function renderReviewsList(expert) {
     modalReviewsList.innerHTML = '';
-    modalReviewCount.textContent = expert.reviews.length;
+    const reviewsArr = expert.reviews || [];
+    modalReviewCount.textContent = reviewsArr.length;
 
-    if (expert.reviews.length === 0) {
-        modalReviewsList.innerHTML = `<p style="font-size:12px; color:#64748B; text-align:center; padding:10px;">மதிப்புரைகள் எதுவும் இல்லை.</p>`;
+    if (reviewsArr.length === 0) {
+        modalReviewsList.innerHTML = `<p style="font-size:12px; color:#5C677D; text-align:center; padding:10px;">மதிப்புரைகள் எதுவும் இல்லை.</p>`;
         return;
     }
 
-    expert.reviews.forEach(rev => {
+    reviewsArr.forEach(rev => {
         const revCard = document.createElement('div');
         revCard.classList.add('single-review-card');
         let stars = '⭐'.repeat(rev.stars);
-        revCard.innerHTML = `<div class="review-stars">${stars}</div><p class="review-comment">${rev.text}</p>`;
+        revCard.innerHTML = `
+            <div class="review-stars">${stars}</div>
+            <p class="review-comment">${rev.text}</p>
+        `;
         modalReviewsList.appendChild(revCard);
     });
 }
@@ -206,6 +150,7 @@ reviewForm.addEventListener('submit', (e) => {
 
     const expert = experts.find(e => e.id === activeExpertId);
     if (expert) {
+        if (!expert.reviews) expert.reviews = [];
         expert.reviews.unshift({ stars: parseInt(ratingSelect), text: reviewText });
         const totalStars = expert.reviews.reduce((sum, r) => sum + r.stars, 0);
         expert.rating = (totalStars / expert.reviews.length).toFixed(1);
@@ -220,10 +165,11 @@ function handleSearch() {
     const selectedService = serviceFilter.value;
 
     const filtered = experts.filter(expert => {
-        const matchesLocation = expert.location.toLowerCase().includes(searchText);
+        const matchesLocation = expert.location ? expert.location.toLowerCase().includes(searchText) : false;
         const matchesService = (selectedService === 'all') || (expert.prof === selectedService);
         return matchesLocation && matchesService;
     });
+
     renderExperts(filtered);
 }
 
@@ -231,49 +177,77 @@ chips.forEach(chip => {
     chip.addEventListener('click', () => {
         chips.forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
-        serviceFilter.value = chip.getAttribute('data-filter');
+        const filterValue = chip.getAttribute('data-filter');
+        serviceFilter.value = filterValue;
         handleSearch();
     });
 });
 
 searchBtn.addEventListener('click', handleSearch);
 areaSearch.addEventListener('keyup', (e) => { if(e.key === 'Enter') handleSearch(); });
+
 openFormBtn.addEventListener('click', () => { registerModal.style.display = 'flex'; });
 closeRegBtn.addEventListener('click', () => { registerModal.style.display = 'none'; });
 closeRevBtn.addEventListener('click', () => { reviewModal.style.display = 'none'; });
 
-expertForm.addEventListener('submit', (e) => {
+expertForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const fileInput = document.getElementById('profile-pic');
-    const file = fileInput.files[0];
     
-    const saveExpert = (imageSrc = null) => {
-        const newExpert = {
-            id: Date.now().toString(),
-            name: document.getElementById('name').value,
-            phone: document.getElementById('phone').value,
-            prof: document.getElementById('prof').value,
-            location: document.getElementById('location').value,
-            rating: "5.0",
-            image: imageSrc,
-            isPremium: false,
-            reviews: []
-        };
-        experts.unshift(newExpert);
-        handleSearch();
-        registerModal.style.display = 'none';
-        expertForm.reset();
+    const newExpertData = {
+        id: Date.now().toString(),
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        prof: document.getElementById('prof').value,
+        location: document.getElementById('location').value,
+        rating: "5.0",
+        isPremium: false,
+        reviews: []
     };
 
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) { saveExpert(event.target.result); };
-        reader.readAsDataURL(file);
-    } else {
-        saveExpert(null);
+    experts.unshift(newExpertData);
+    handleSearch(); 
+    
+    registerModal.style.display = 'none';
+    expertForm.reset();
+
+    try {
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: "create", ...newExpertData })
+        });
+        console.log("Saved to Royal Database!");
+    } catch (error) {
+        console.error("Sheet save error:", error);
     }
 });
 
-handleSearch();
+loadExpertsFromSheet();
+
+// --- ROYAL GIFT SYSTEM ---
+const MY_UPI_ID = '8939717405@ybl'; 
+const MY_NAME = 'Local Workers Premium Admin'; 
+
+const tipsBtn = document.getElementById('tips-btn');
+const tipsModal = document.getElementById('tips-modal');
+const closeTipsBtn = document.getElementById('close-tips-btn');
+const tipsForm = document.getElementById('tips-form');
+
+tipsBtn.addEventListener('click', () => { tipsModal.style.display = 'flex'; });
+closeTipsBtn.addEventListener('click', () => { tipsModal.style.display = 'none'; });
+
+tipsForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const amount = document.getElementById('tips-amount').value;
+    if (!amount || amount <= 0) return;
+
+    const upiUrl = `upi://pay?pa=${encodeURIComponent(MY_UPI_ID)}&pn=${encodeURIComponent(MY_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent('Royal Gift for Local Workers App')}`;
+    window.location.href = upiUrl;
+    tipsModal.style.display = 'none';
+    tipsForm.reset();
+});
+
+                       
 
 
